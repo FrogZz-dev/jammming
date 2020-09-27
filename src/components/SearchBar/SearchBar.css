@@ -22,6 +22,7 @@
 }
 
 .SearchButton {
+    cursor: pointer;
     text-transform: uppercase;
     width: 8.11rem;
     padding: 0.77rem 0;
