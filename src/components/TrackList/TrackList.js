@@ -7,7 +7,14 @@ function TrackList(props) {
     <div className="TrackList">
       {
         props.tracks.map(track => {
-          return <Track key={track.id} trackInfo={track} onAdd={props.onAdd} onRemove={props.onRemove} isRemoval={props.isRemoval} />
+          return <Track
+            key={track.id} 
+            trackInfo={track}
+            onAdd={props.onAdd}
+            onRemove={props.onRemove}
+            isRemoval={props.isRemoval}
+            currentPreview={props.currentPreview}
+            onPreviewToggle={props.onPreviewToggle} />
         })
       }
     </div>

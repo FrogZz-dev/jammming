@@ -25,7 +25,7 @@ const Spotify = {
     },
 
     async search(term) {
-        const searchUrl = `https://api.spotify.com/v1/search?q=${term}&type=track`;
+        const searchUrl = `https://api.spotify.com/v1/search?q=${term}&type=track,artist,album`;
         try {
             const response = await fetch(searchUrl, {
                 headers: { 'Authorization': 'Bearer ' + userAccessToken }
@@ -98,6 +98,20 @@ const Spotify = {
                 }
             }
         } catch (error) { console.log(error) }
+    },
+
+    async getPreviewUrl(trackId) {
+        try {
+            const response = await fetch(`https://api.spotify.com/v1/tracks/${trackId}`, {
+                headers: { 'Authorization': 'Bearer ' + userAccessToken }
+            } );
+
+            if (response.ok) {
+                const responseJson = await response.json();
+
+                return responseJson.preview_url;
+            }
+        } catch(error) {console.log(error)}
     }
 };
 

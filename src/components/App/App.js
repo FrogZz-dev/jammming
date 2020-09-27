@@ -3,7 +3,7 @@ import './App.css';
 import SearchBar from '../SearchBar/SearchBar';
 import SearchResults from '../SearchResults/SearchResults';
 import Playlist from '../Playlist/Playlist';
-import Spotify from '../../util/Spotify'
+import Spotify from '../../util/Spotify';
 
 class App extends Component {
   constructor(props) {
@@ -12,7 +12,9 @@ class App extends Component {
     this.state = {
       searchResults: [],
       playlistName: 'New Playlist',
-      playlistTracks: []
+      playlistTracks: [],
+      playingPreviewId: '',
+      audioPlayer: new Audio('')
     };
 
     this.addTrack = this.addTrack.bind(this);
@@ -20,6 +22,7 @@ class App extends Component {
     this.updatePlaylistName = this.updatePlaylistName.bind(this);
     this.savePlaylist = this.savePlaylist.bind(this);
     this.search = this.search.bind(this);
+    this.previewTrack = this.previewTrack.bind(this);
   }
 
   addTrack(track) {
@@ -46,7 +49,7 @@ class App extends Component {
 
   savePlaylist() {
     const trackList = this.state.playlistTracks.map(track => track.URI);
-    Spotify.savePlaylist(this.state.playlistName,  trackList);
+    Spotify.savePlaylist(this.state.playlistName, trackList);
 
     this.setState({
       playlistName: 'New Playlist',
@@ -62,6 +65,39 @@ class App extends Component {
     }
   }
 
+  async previewTrack(action, trackId) {
+    if (action === 'play') {
+      if (trackId !== this.state.playingPreviewId) {
+        const previewUrl = await Spotify.getPreviewUrl(trackId);
+        if (previewUrl) {
+          this.setState({
+            playingPreviewId: trackId
+          });
+          this.state.audioPlayer.src = previewUrl;
+        } else {
+          this.setState({
+            playingPreviewId: ''
+          });
+          this.state.audioPlayer.src = '';
+        }
+      }
+      if ( this.state.audioPlayer.src !== window.location.href ) {
+        this.state.audioPlayer.play();
+      } else {
+        alert('No preview available');
+      }
+
+    } else {
+      this.state.audioPlayer.pause();
+    }
+  }
+
+  componentDidMount() {
+    this.state.audioPlayer.volume = 0.3;
+    this.state.audioPlayer.onended = () => this.setState({ playingPreviewId: '' })
+
+  }
+
   render() {
     return (
       <div>
@@ -69,8 +105,19 @@ class App extends Component {
         <div className="App" >
           <SearchBar onSearch={this.search} />
           <div className="App-playlist" >
-            <SearchResults searchResults={this.state.searchResults} onAdd={this.addTrack} />
-            <Playlist name={this.state.playlistName} onNameUpdate={this.updatePlaylistName} playlist={this.state.playlistTracks} onRemove={this.removeTrack} onSave={this.savePlaylist} />
+            <SearchResults
+              searchResults={this.state.searchResults}
+              onAdd={this.addTrack}
+              currentPreview={this.state.playingPreviewId}
+              onPreviewToggle={this.previewTrack} />
+            <Playlist
+              name={this.state.playlistName}
+              onNameUpdate={this.updatePlaylistName}
+              playlist={this.state.playlistTracks}
+              onRemove={this.removeTrack}
+              onSave={this.savePlaylist}
+              currentPreview={this.state.playingPreviewId}
+              onPreviewToggle={this.previewTrack} />
           </div>
         </div>
       </div>

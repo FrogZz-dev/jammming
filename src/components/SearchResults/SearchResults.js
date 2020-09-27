@@ -7,7 +7,12 @@ function SearchResults(props) {
   return (
     <div className="SearchResults" >
       <h2>Results</h2>
-      <TrackList tracks={props.searchResults} onAdd={props.onAdd} isRemoval={false}/>
+      <TrackList
+        tracks={props.searchResults}
+        onAdd={props.onAdd}
+        isRemoval={false}
+        currentPreview={props.currentPreview}
+        onPreviewToggle={props.onPreviewToggle} />
     </div>
   );
 }
