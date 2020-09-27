@@ -23,12 +23,13 @@ class App extends Component {
     this.savePlaylist = this.savePlaylist.bind(this);
     this.search = this.search.bind(this);
     this.previewTrack = this.previewTrack.bind(this);
+    this.syncLists = this.syncLists.bind(this);
   }
 
   addTrack(track) {
     if (this.state.playlistTracks.find(savedTrack => savedTrack.id === track.id)) {
       return;
-    }
+    }   
 
     this.state.playlistTracks.push(track);
     this.setState({ playlistTracks: this.state.playlistTracks })
@@ -39,6 +40,10 @@ class App extends Component {
 
     this.state.playlistTracks.splice(trackIndex, 1);
     this.setState({ playlistTracks: this.state.playlistTracks })
+  }
+
+  syncLists() {
+    return  this.state.searchResults.filter( track => !this.state.playlistTracks.includes(track))
   }
 
   updatePlaylistName(name) {
@@ -106,7 +111,7 @@ class App extends Component {
           <SearchBar onSearch={this.search} />
           <div className="App-playlist" >
             <SearchResults
-              searchResults={this.state.searchResults}
+              searchResults={this.syncLists()}
               onAdd={this.addTrack}
               currentPreview={this.state.playingPreviewId}
               onPreviewToggle={this.previewTrack} />
