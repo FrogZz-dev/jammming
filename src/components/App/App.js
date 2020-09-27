@@ -12,24 +12,7 @@ class App extends Component {
     this.state = {
       searchResults: [],
       playlistName: 'New Playlist',
-      playlistTracks: [{
-        name: 'Stronger',
-        artist: 'Britney Spears',
-        album: 'Oops!... I Did It Again',
-        id: 4
-      },
-      {
-        name: 'So Emotional',
-        artist: 'Whitney Houston',
-        album: 'Whitney',
-        id: 5
-      },
-      {
-        name: "It's Not Right But It's Okay",
-        artist: 'Whitney Houston',
-        album: 'My Love Is Your Love',
-        id: 6
-      }]
+      playlistTracks: []
     };
 
     this.addTrack = this.addTrack.bind(this);
@@ -61,8 +44,14 @@ class App extends Component {
     });
   }
 
-  savePlaylist() { 
-    Spotify.savePlaylist('testName', ['1']);
+  savePlaylist() {
+    const trackList = this.state.playlistTracks.map(track => track.URI);
+    Spotify.savePlaylist(this.state.playlistName,  trackList);
+
+    this.setState({
+      playlistName: 'New Playlist',
+      playlistTracks: []
+    });
   }
 
   async search(term) {

@@ -60,7 +60,8 @@ const Spotify = {
 
         let userId;
         const headers = {
-            'Authorization': 'Bearer ' + userAccessToken
+            'Authorization': 'Bearer ' + userAccessToken,
+            'Content-Type': 'application/json'
         }
 
         try {
@@ -70,16 +71,13 @@ const Spotify = {
                 let responseJson = await response.json();
 
                 userId = responseJson.id;
-                const data = JSON.stringify({
+                let data = JSON.stringify({
                     name: playlistName
                 });
 
                 response = await fetch(`https://api.spotify.com/v1/users/${userId}/playlists`, {
                     method: 'POST',
-                    headers: {
-                        'Authorization': 'Bearer ' + userAccessToken,
-                        'Content-Type': 'application/json'
-                    },
+                    headers: headers,
                     body: data
                 });
 
@@ -87,8 +85,16 @@ const Spotify = {
                     responseJson = await response.json();
 
                     const playlistId = responseJson.id;
-                    console.log(playlistId);
 
+                    data = JSON.stringify({
+                        uris: trackList
+                    });
+                    
+                    response = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {
+                        method: 'POST',
+                        headers: headers,
+                        body: data
+                    });
                 }
             }
         } catch (error) { console.log(error) }
